@@ -78,7 +78,7 @@ names(reducedSet) <- reducedNames   # Apply new names to dataframe
 # Step 5: Create tidy data set with average of each variable, by activity, by subject
 
 # Create tidy data set
-tidyDataset <- reducedSet %>% group_by(subject, activity) %>% 
+tidyDataset <- reducedSet %>% group_by(activity, subject) %>% 
   summarise_each(funs(mean))
 
 # Write tidy data to ouput file
