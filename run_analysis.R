@@ -84,6 +84,7 @@ tidyDataset <- reducedSet %>% group_by(subject, activity) %>%
 # Write tidy data to ouput file
 write.table(tidyDataset, file = "tidyDataset.txt")
 
-# Call to read in tidy data set produced
+# Call to read in tidy data set produced and validate steps
 # validate <- read.table("tidyDataset.txt")
+# View(validate)
 
