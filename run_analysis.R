@@ -1,7 +1,9 @@
 # Coursera Data Science Specialization Course
 # Getting and Cleanng Data
 # Course Project
-###########################################################################################
+#######################################################################################
+# Set Up Computing Environment
+
 # Packages Used
 library(tidyverse)
 library(lubridate)
@@ -10,6 +12,9 @@ library(lubridate)
 today <- Sys.time()
 ymd_hms(today)
 mySystem <- sessionInfo()
+
+#######################################################################################
+# Step 1: Merge training and test sets to create one data set
 
 # Data Description & Source File URLs
 dataDescription <- "http://archive.ics.uci.edu/ml/datasets/Human+Activity+Recognition+Using+Smartphones"
@@ -33,25 +38,33 @@ subject_train <- read.table("./UCI HAR Dataset/train/subject_train.txt")
 X_train <- read.table("./UCI HAR Dataset/train/X_train.txt")
 y_train <- read.table("./UCI HAR Dataset/train/y_train.txt")
 
-# Combine subjects, activity labels, and features into test and train sets (Step 1)
+# Combine subjects, activity labels, and features into test and train sets
 test  <- cbind(subject_test, y_test, X_test)
 train <- cbind(subject_train, y_train, X_train)
 
-# Combine test and train sets into full data set  (Step 1 - continued)
+# Combine test and train sets into full data set
 fullSet <- rbind(test, train)
 
-# Subset to mean and standard deviation columns; keep subject, activity columns (Step 2)
+#######################################################################################
+# Step 2: Extract only measurements on mean and standard deviation
+
+# Subset, keeeping mean, std columns; also keep subject, activity columns 
 allNames <- c("subject", "activity", as.character(features$V2))
-meanStdColumns <- grep("[Mm]ean|std", allNames, value = FALSE)
-reducedSet <- fullset[ ,c(1,2,meanStdColumns)]
+meanStdColumns <- grep("subject|activity|[Mm]ean|std", allNames, value = FALSE)
+reducedSet <- fullset[ ,meanStdColumns]
 
-# Uses descriptive activity names for activites in the data set: by indexing (Step 3)
+#######################################################################################
+# Step 3: Use descriptive activities names for activity measurements
+
+# Use indexing to apply activity names to corresponding activity number
 names(activity_labels) <- c("activityNumber", "activityName")
-reducedSet$V1.1 <- activity_labels$activityName[reducedset$V1.1]
+reducedSet$V1.1 <- activity_labels$activityName[reducedSet$V1.1]
 
-# Appropriately Label the Dataset with Descriptive Variable Names (Step 4)
-## Use series of substitutions to rename varaiables
-reducedNames <- allNames[c(1,2,meanStdColumns)]    # Names after subsetting
+#######################################################################################
+# Step 4: Appropriately Label the Dataset with Descriptive Variable Names
+
+# Use series of substitutions to rename varaiables
+reducedNames <- allNames[meanStdColumns]    # Names after subsetting
 reducedNames <- gsub("mean", "Mean", reducedNames)
 reducedNames <- gsub("std", "Std", reducedNames)
 reducedNames <- gsub("gravity", "Gravity", reducedNames)
@@ -61,8 +74,14 @@ reducedNames <- gsub("^f", "frequency", reducedNames)
 reducedNames <- gsub("^anglet", "angleTime", reducedNames)
 names(reducedSet) <- reducedNames   # Apply new names to dataframe
 
-# Create tidy data set (Step 5)
-tidyDataset <- reducedSet %>% group_by(subject, activity) %>% summarise_each(funs(mean))
+#######################################################################################
+# Step 5: Create tidy data set with average of each variable, by activity, by subject
+
+# Create tidy data set
+tidyDataset <- reducedSet %>% group_by(subject, activity) %>% 
+  summarise_each(funs(mean))
+
+# Write tidy data to ouput file
 write.table(tidyDataset, file = "tidyDataset.txt")
 
 # Call to read in tidy data set produced
