@@ -16,3 +16,4 @@ The data is then grouped by subject and activity, and summarized by each variabl
 
 ### Data Processing Description and Variable Names: CodeBook.md
 The file **CodeBook.md** describes the processing steps and variables used in **run_analysis.R** and supplements the README.txt included in the original downloaded archive.
+

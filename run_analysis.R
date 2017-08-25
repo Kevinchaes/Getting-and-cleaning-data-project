@@ -82,7 +82,7 @@ tidyDataset <- reducedSet %>% group_by(subject, activity) %>%
   summarise_each(funs(mean))
 
 # Write tidy data to ouput file
-write.table(tidyDataset, file = "tidyDataset.txt")
+write.table(tidyDataset, file = "tidyDataset.txt", row.names = FALSE)
 
 # Call to read in tidy data set produced and validate steps
 # validate <- read.table("tidyDataset.txt")
