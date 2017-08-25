@@ -2,6 +2,7 @@
 # Getting and Cleanng Data
 # Course Project
 ###########################################################################################
+# Packages Used
 library(tidyverse)
 library(lubridate)
 
@@ -10,7 +11,7 @@ today <- Sys.time()
 ymd_hms(today)
 mySystem <- sessionInfo()
 
-# Data Description & Source File
+# Data Description & Source File URLs
 dataDescription <- "http://archive.ics.uci.edu/ml/datasets/Human+Activity+Recognition+Using+Smartphones"
 dataUrl <- "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
 
@@ -18,49 +19,52 @@ dataUrl <- "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%2
 download.file(dataUrl, destfile = "data.zip")
 unzip("data.zip")
 
-# Read the Labels,Test, and Training Sets
+# Read Activity and Feature Labels
 activity_labels <- read.table("./UCI HAR Dataset/activity_labels.txt") #V2 contains label
-features <- read.table("./UCI HAR Dataset/features.txt")              # V2 contains feature labels
+features <- read.table("./UCI HAR Dataset/features.txt")               #V2 contains feature labels
 
+# Read Test data 
 subject_test <- read.table("./UCI HAR Dataset/test/subject_test.txt")
 X_test <- read.table("./UCI HAR Dataset/test/X_test.txt")
 y_test <- read.table("./UCI HAR Dataset/test/y_test.txt")
 
+# Read Train data
 subject_train <- read.table("./UCI HAR Dataset/train/subject_train.txt")
 X_train <- read.table("./UCI HAR Dataset/train/X_train.txt")
 y_train <- read.table("./UCI HAR Dataset/train/y_train.txt")
 
-# Add feature labels to feature data: X_test, X_train (Step 4)
-names(X_test)  <- features$V2
-names(X_train) <- features$V2
-
-# Add names to subject/case and activity_labels, and label data (Step 4)
-names(subject_test)  <- "subject" 
-names(subject_train) <- "subject" 
-names(activity_labels) <- c("activity_number", "activity_name")
-names(y_test)  <- "activity"
-names(y_train) <- "activity"
-
-# Combine subjects, labels, features into test and train sets (Step 1)
+# Combine subjects, activity labels, and features into test and train sets (Step 1)
 test  <- cbind(subject_test, y_test, X_test)
 train <- cbind(subject_train, y_train, X_train)
 
 # Combine test and train sets into full data set  (Step 1 - continued)
-fullset <- rbind(test, train)
+fullSet <- rbind(test, train)
 
-# Subset to observations of mean and standard deviation on each measurement
-# but keep subject and activity columns (Step 2)
-allnames <- c("subject", "activity", as.character(features$V2))
-meanStdColumns <- grep("mean|std", allnames, value = FALSE)
-reducedset <- fullset[ ,c(1,2,meanStdColumns)]
+# Subset to mean and standard deviation columns; keep subject, activity columns (Step 2)
+allNames <- c("subject", "activity", as.character(features$V2))
+meanStdColumns <- grep("[Mm]ean|std", allNames, value = FALSE)
+reducedSet <- fullset[ ,c(1,2,meanStdColumns)]
 
 # Uses descriptive activity names for activites in the data set: by indexing (Step 3)
-reducedset$activity <- activity_labels$activity_name[reducedset$activity]
+names(activity_labels) <- c("activityNumber", "activityName")
+reducedSet$V1.1 <- activity_labels$activityName[reducedset$V1.1]
 
-# Create tidy data set
-tidyDataset <- reducedset %>% group_by(subject, activity) %>% summarise_each(funs(mean))
+# Appropriately Label the Dataset with Descriptive Variable Names (Step 4)
+## Use series of substitutions to rename varaiables
+reducedNames <- allNames[c(1,2,meanStdColumns)]    # Names after subsetting
+reducedNames <- gsub("mean", "Mean", reducedNames)
+reducedNames <- gsub("std", "Std", reducedNames)
+reducedNames <- gsub("gravity", "Gravity", reducedNames)
+reducedNames <- gsub("[[:punct:]]", "", reducedNames)
+reducedNames <- gsub("^t", "time", reducedNames)
+reducedNames <- gsub("^f", "frequency", reducedNames)
+reducedNames <- gsub("^anglet", "angleTime", reducedNames)
+names(reducedSet) <- reducedNames   # Apply new names to dataframe
+
+# Create tidy data set (Step 5)
+tidyDataset <- reducedSet %>% group_by(subject, activity) %>% summarise_each(funs(mean))
 write.table(tidyDataset, file = "tidyDataset.txt")
 
 # Call to read in tidy data set produced
-a <- read.table("tidyDataset.txt")
+# validate <- read.table("tidyDataset.txt")
 
