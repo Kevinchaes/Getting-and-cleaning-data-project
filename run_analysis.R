@@ -11,7 +11,7 @@
 library(tidyverse)
 library(lubridate)
 
-# ## Step 1: Merge training and test sets to create one data set  
+#' ## Step 1: Merge training and test sets to create one data set  
 
 # Data Description & Source File URLs
 dataDescription <- "http://archive.ics.uci.edu/ml/datasets/Human+Activity+Recognition+Using+Smartphones"
