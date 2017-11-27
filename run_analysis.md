@@ -1,44 +1,20 @@
 Getting and Cleaning Data: Course Project
 ================
 Mark Blackmore
-2017-11-21
+2017-11-27
 
-Set Up Computing Environment
-----------------------------
+-   [Data Description & Source File URLs](#data-description-source-file-urls)
+-   [Merge training and test sets to create one data set](#merge-training-and-test-sets-to-create-one-data-set)
+-   [Extract only measurements on mean and standard deviation](#extract-only-measurements-on-mean-and-standard-deviation)
+-   [Use descriptive activities names for activity measurements](#use-descriptive-activities-names-for-activity-measurements)
+-   [Appropriately Label the Dataset with Descriptive Variable Names](#appropriately-label-the-dataset-with-descriptive-variable-names)
+-   [Create tidy data set with average of each variable, by activity, by subject](#create-tidy-data-set-with-average-of-each-variable-by-activity-by-subject)
+-   [Session info](#session-info)
 
-Packages Used
-
-``` r
-library(tidyverse)
-```
-
-    ## Loading tidyverse: ggplot2
-    ## Loading tidyverse: tibble
-    ## Loading tidyverse: tidyr
-    ## Loading tidyverse: readr
-    ## Loading tidyverse: purrr
-    ## Loading tidyverse: dplyr
-
-    ## Conflicts with tidy packages ----------------------------------------------
-
-    ## filter(): dplyr, stats
-    ## lag():    dplyr, stats
+Data Description & Source File URLs
+-----------------------------------
 
 ``` r
-library(lubridate)
-```
-
-    ## 
-    ## Attaching package: 'lubridate'
-
-    ## The following object is masked from 'package:base':
-    ## 
-    ##     date
-
-``` r
-# ## Step 1: Merge training and test sets to create one data set  
-
-# Data Description & Source File URLs
 dataDescription <- "http://archive.ics.uci.edu/ml/datasets/Human+Activity+Recognition+Using+Smartphones"
 dataUrl <- "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
 ```
@@ -49,6 +25,9 @@ Download and Extract Zip Archive
 # download.file(dataUrl, destfile = "data.zip")
 # unzip("data.zip")
 ```
+
+Merge training and test sets to create one data set
+---------------------------------------------------
 
 Read Activity and Feature Labels
 
@@ -86,8 +65,8 @@ Combine test and train sets into full data set
 fullSet <- rbind(test, train)
 ```
 
-Step 2: Extract only measurements on mean and standard deviation
-----------------------------------------------------------------
+Extract only measurements on mean and standard deviation
+--------------------------------------------------------
 
 Subset, keeeping mean, std columns; also keep subject, activity columns
 
@@ -97,8 +76,8 @@ meanStdColumns <- grep("subject|activity|[Mm]ean|std", allNames, value = FALSE)
 reducedSet <- fullSet[ ,meanStdColumns]
 ```
 
-Step 3: Use descriptive activities names for activity measurements
-------------------------------------------------------------------
+Use descriptive activities names for activity measurements
+----------------------------------------------------------
 
 Use indexing to apply activity names to corresponding activity number
 
@@ -107,8 +86,8 @@ names(activity_labels) <- c("activityNumber", "activityName")
 reducedSet$V1.1 <- activity_labels$activityName[reducedSet$V1.1]
 ```
 
-Step 4: Appropriately Label the Dataset with Descriptive Variable Names
------------------------------------------------------------------------
+Appropriately Label the Dataset with Descriptive Variable Names
+---------------------------------------------------------------
 
 Use series of substitutions to rename varaiables
 
@@ -124,8 +103,8 @@ reducedNames <- gsub("^anglet", "angleTime", reducedNames)
 names(reducedSet) <- reducedNames   # Apply new names to dataframe
 ```
 
-Step 5: Create tidy data set with average of each variable, by activity, by subject
------------------------------------------------------------------------------------
+Create tidy data set with average of each variable, by activity, by subject
+---------------------------------------------------------------------------
 
 Create tidy data set
 
@@ -146,7 +125,8 @@ write.table(tidyDataset, file = "tidyDataset.txt", row.names = FALSE)
 
 ------------------------------------------------------------------------
 
-#### Session info:
+Session info
+------------
 
 ``` r
 sessionInfo()

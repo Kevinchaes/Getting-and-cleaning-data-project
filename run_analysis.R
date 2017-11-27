@@ -2,24 +2,26 @@
 #' title: 'Getting and Cleaning Data: Course Project'
 #' author: "Mark Blackmore"
 #' date: "`r format(Sys.Date())`"
-#' output: github_document
+#' output: 
+#'   github_document:
+#'     toc: true
 #' ---
+#'
+#+ echo=FALSE
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(lubridate)
+})
 
-#' ## Set Up Computing Environment  
-
-#' Packages Used
-library(tidyverse)
-library(lubridate)
-
-#' ## Step 1: Merge training and test sets to create one data set  
-
-# Data Description & Source File URLs
+#' ## Data Description & Source File URLs
 dataDescription <- "http://archive.ics.uci.edu/ml/datasets/Human+Activity+Recognition+Using+Smartphones"
 dataUrl <- "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
 
 #' Download and Extract Zip Archive  
 # download.file(dataUrl, destfile = "data.zip")
 # unzip("data.zip")
+
+#' ## Merge training and test sets to create one data set  
 
 #' Read Activity and Feature Labels
 activity_labels <- read.table("./UCI HAR Dataset/activity_labels.txt") #V2 contains label
@@ -42,20 +44,20 @@ train <- cbind(subject_train, y_train, X_train)
 #' Combine test and train sets into full data set
 fullSet <- rbind(test, train)
 
-#' ## Step 2: Extract only measurements on mean and standard deviation  
+#' ## Extract only measurements on mean and standard deviation  
 
 #' Subset, keeeping mean, std columns; also keep subject, activity columns 
 allNames <- c("subject", "activity", as.character(features$V2))
 meanStdColumns <- grep("subject|activity|[Mm]ean|std", allNames, value = FALSE)
 reducedSet <- fullSet[ ,meanStdColumns]
 
-#' ## Step 3: Use descriptive activities names for activity measurements  
+#' ## Use descriptive activities names for activity measurements  
 
 #' Use indexing to apply activity names to corresponding activity number
 names(activity_labels) <- c("activityNumber", "activityName")
 reducedSet$V1.1 <- activity_labels$activityName[reducedSet$V1.1]
 
-#' ## Step 4: Appropriately Label the Dataset with Descriptive Variable Names  
+#' ## Appropriately Label the Dataset with Descriptive Variable Names  
 
 #' Use series of substitutions to rename varaiables
 reducedNames <- allNames[meanStdColumns]    # Names after subsetting
@@ -68,7 +70,7 @@ reducedNames <- gsub("^f", "frequency", reducedNames)
 reducedNames <- gsub("^anglet", "angleTime", reducedNames)
 names(reducedSet) <- reducedNames   # Apply new names to dataframe
 
-#' ## Step 5: Create tidy data set with average of each variable, by activity, by subject  
+#' ## Create tidy data set with average of each variable, by activity, by subject  
 
 #' Create tidy data set
 tidyDataset <- reducedSet %>% group_by(activity, subject) %>% 
@@ -83,6 +85,6 @@ write.table(tidyDataset, file = "tidyDataset.txt", row.names = FALSE)
 
 #' -------------
 #'  
-#' #### Session info:
+#' ## Session info
 sessionInfo()
 
