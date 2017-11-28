@@ -1,5 +1,6 @@
 # Getting-Cleaning-Data-Project
-Coursera Data Science Specialization Course: Course Project
+Coursera Data Science Specialization Course 
+Course Project
 
 ## Project Description
 This project is an exercise in acquiring and cleaning data. 
