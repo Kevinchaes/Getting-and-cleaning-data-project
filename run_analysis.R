@@ -59,3 +59,6 @@ names(reducedSet) <- reducedNames   # Apply new names to dataframe
 #Create tidy data set
 tidyDataset <- reducedSet %>% group_by(activity, subject) %>% 
   summarise_all(funs(mean))
+
+#export final data
+write.table(tidyDataset, file = "tidyDataset.txt", row.names = FALSE)
